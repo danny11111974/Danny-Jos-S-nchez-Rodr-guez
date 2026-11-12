@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELECTRO-DIAG // Consultoría Forense Electromecánica</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Marked.js para renderizado seguro de Markdown técnico -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              500: '#22c55e',
+              600: '#16a34a',
+              900: '#14532d',
+            },
+            industrial: {
+              card: '#0f172a',
+              border: '#1e293b',
+              accent: '#38bdf8'
+            }
+          },
+          fontFamily: {
+            mono: ['JetBrains Mono', 'Menlo', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    /* Estilos para el reporte Markdown generado */
+    .prose-industrial h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #38bdf8;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 0.5rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .prose-industrial h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #f8fafc;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .prose-industrial p {
+      color: #cbd5e1;
+      margin-bottom: 0.75rem;
+      line-height: 1.6;
+    }
+    .prose-industrial ul, .prose-industrial ol {
+      margin-left: 1.5rem;
+      margin-bottom: 0.75rem;
+      color: #cbd5e1;
+    }
+    .prose-industrial li {
+      margin-bottom: 0.35rem;
+      list-style-type: square;
+    }
+    .prose-industrial strong {
+      color: #f1f5f9;
+    }
+    @media print {
+      body { background-color: white !important; color: black !important; }
+      #input-panel, #header-controls { display: none !important; }
+      #output-panel { width: 100% !important; border: none !important; box-shadow: none !important; }
+      .prose-industrial h2 { color: #0284c7 !important; border-color: #cbd5e1 !important; }
+      .prose-industrial p, .prose-industrial li { color: #334155 !important; }
+    }
+  </style>
+</head>
+
+<body class="h-full flex flex-col font-sans antialiased overflow-hidden">
+
+  <!-- NAVBAR TÉCNICA -->
+  <header class="bg-slate-900 border-b border-industrial-border px-6 py-3.5 flex items-center justify-between shrink-0">
+    <div class="flex items-center space-x-3">
+      <div class="p-2 bg-sky-500/10 border border-sky-500/30 rounded-lg text-industrial-accent">
+        <i data-lucide="cpu" class="w-6 h-6"></i>
+      </div>
+      <div>
+        <h1 class="text-sm font-bold tracking-wider uppercase text-white flex items-center gap-2">
+          ELECTRO-DIAG AI <span class="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">v1.5 PRO CORE</span>
+        </h1>
+        <p class="text-xs text-slate-400">Auditoría Forense & Diagnóstico Electromecánico Multimodal</p>
+      </div>
+    </div>
+
+    <!-- Gestión de API Key -->
+    <div id="header-controls" class="flex items-center space-x-3">
+      <div class="relative flex items-center">
+        <i data-lucide="key" class="w-4 h-4 absolute left-3 text-slate-500"></i>
+        <input 
+          type="password" 
+          id="apiKeyInput" 
+          placeholder="Gemini API Key" 
+          class="bg-slate-950 border border-slate-700 text-xs rounded-lg pl-9 pr-3 py-1.5 focus:border-industrial-accent focus:outline-none w-56 font-mono text-slate-300"
+        />
+      </div>
+      <button 
+        onclick="saveApiKey()" 
+        class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5"
+        title="Guardar localmente en el navegador"
+      >
+        <i data-lucide="save" class="w-3.5 h-3.5"></i> Guardar
+      </button>
+    </div>
+  </header>
+
+  <!-- WORKSPACE PRINCIPAL -->
+  <main class="flex-1 flex flex-col lg:flex-row overflow-hidden bg-slate-950">
+
+    <!-- PANEL DE ENTRADA (COLUMNA IZQUIERDA) -->
+    <section id="input-panel" class="w-full lg:w-1/2 p-6 overflow-y-auto border-r border-industrial-border space-y-6">
+      
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+        <div class="flex items-center justify-between mb-1">
+          <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+            <i data-lucide="sliders" class="w-4 h-4 text-industrial-accent"></i> Parámetros de Operación
+          </h2>
+          <span class="text-[10px] text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Temperatura: 0.2 (Riguroso)</span>
+        </div>
+        <p class="text-xs text-slate-500">
+          Aplicable a motores, bombas, reductores, cuadros de distribución, actuadores, compresores y trenes de potencia electromecánicos en general.
+        </p>
+      </div>
+
+      <!-- ENTRADA 1: FOTOGRAFÍA ESTÁTICA / ALTA RESOLUCIÓN -->
+      <div class="bg-industrial-card border border-industrial-border rounded-xl p-4 space-y-3">
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+          <i data-lucide="camera" class="w-4 h-4 text-sky-400"></i> Fotografía / Imagen de Detalle (Macro/Falla)
+        </label>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <label class="flex flex-col items-center justify-center p-4 border-2 border-dashed border-slate-700 hover:border-sky-500/50 rounded-lg cursor-pointer bg-slate-950/40 hover:bg-slate-900/40 transition">
+            <i data-lucide="upload-cloud" class="w-6 h-6 text-slate-400 mb-1"></i>
+            <span class="text-xs font-medium text-slate-300">Seleccionar o Arrastrar Foto</span>
+            <span class="text-[10px] text-slate-500">JPG, PNG, WEBP</span>
+            <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageSelected(event)">
+          </label>
+
+          <label class="flex flex-col items-center justify-center p-4 border-2 border-dashed border-slate-700 hover:border-emerald-500/50 rounded-lg cursor-pointer bg-slate-950/40 hover:bg-slate-900/40 transition">
+            <i data-lucide="aperture" class="w-6 h-6 text-emerald-400 mb-1"></i>
+            <span class="text-xs font-medium text-slate-300">Tomar Foto con Cámara</span>
+            <span class="text-[10px] text-slate-500">Cámara Directa</span>
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="handleImageSelected(event)">
+          </label>
+        </div>
+
+        <div id="imagePreviewContainer" class="hidden mt-3 relative rounded-lg overflow-hidden border border-slate-800 bg-black/60">
+          <img id="imagePreview" src="" alt="Previsualización" class="max-h-48 w-full object-contain mx-auto">
+          <button onclick="clearImage()" class="absolute top-2 right-2 p-1.5 bg-rose-600/80 hover:bg-rose-600 text-white rounded-md text-xs backdrop-blur-sm transition">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ENTRADA 2: SECUENCIA DE VIDEO -->
+      <div class="bg-industrial-card border border-industrial-border rounded-xl p-4 space-y-3">
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+          <i data-lucide="video" class="w-4 h-4 text-indigo-400"></i> Registro de Video (Vibración / Dinámica / Ruido)
+        </label>
+        
+        <div class="flex items-center gap-3">
+          <label class="flex-1 flex items-center justify-center gap-2 p-3 border-2 border-dashed border-slate-700 hover:border-indigo-500/50 rounded-lg cursor-pointer bg-slate-950/40 hover:bg-slate-900/40 transition">
+            <i data-lucide="film" class="w-5 h-5 text-indigo-400"></i>
+            <span class="text-xs font-medium text-slate-300">Cargar Clip Corto de Video (&lt; 20 MB)</span>
+            <input type="file" id="videoInput" accept="video/mp4,video/webm,video/quicktime" class="hidden" onchange="handleVideoSelected(event)">
+          </label>
+        </div>
+
+        <div id="videoPreviewContainer" class="hidden mt-3 relative rounded-lg overflow-hidden border border-slate-800 bg-black/60 p-2">
+          <video id="videoPreview" controls class="max-h-48 w-full rounded"></video>
+          <div class="flex justify-between items-center mt-2 px-1">
+            <span id="videoInfo" class="text-[11px] font-mono text-slate-400"></span>
+            <button onclick="clearVideo()" class="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1">
+              <i data-lucide="x-circle" class="w-3.5 h-3.5"></i> Descartar Video
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENTRADA 3: DESCRIPCIÓN CONTEXTUAL Y TELEMETRÍA -->
+      <div class="bg-industrial-card border border-industrial-border rounded-xl p-4 space-y-2">
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+          <i data-lucide="clipboard-pen" class="w-4 h-4 text-amber-400"></i> Contexto Operativo y Síntomas Percibidos
+        </label>
+        <textarea 
+          id="contextInput" 
+          rows="4" 
+          placeholder="Ej: Motor trifásico de jaula de ardilla 75 kW que acciona bomba centrífuga multietapa. Se detecta incremento de temperatura superficial en chumacera lado acople (>85°C), ruido seco tipo cascabeleo e incremento de vibración axial tras parada imprevista del proceso..." 
+          class="w-full bg-slate-950 border border-slate-800 focus:border-industrial-accent rounded-lg p-3 text-xs text-slate-200 placeholder-slate-600 focus:outline-none font-sans"
+        ></textarea>
+      </div>
+
+      <!-- BOTÓN DE DISPARO DEL DIAGNÓSTICO -->
+      <button 
+        id="btnAnalyze" 
+        onclick="executeForensicAnalysis()" 
+        class="w-full py-3.5 px-4 bg-gradient-to-r from-sky-500 to-emerald-500 hover:from-sky-400 hover:to-emerald-400 text-slate-950 font-bold uppercase tracking-wider text-sm rounded-xl shadow-lg shadow-sky-500/10 flex items-center justify-center gap-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <i data-lucide="search-check" class="w-5 h-5"></i> Ejecutar Diagnóstico Forense Gemini 1.5 Pro
+      </button>
+
+      <!-- INDICADORES DE ESTADO EN TIEMPO REAL -->
+      <div id="statusContainer" class="hidden bg-slate-900 border border-slate-800 rounded-lg p-3 space-y-2">
+        <div class="flex items-center justify-between text-xs font-mono">
+          <span id="statusMessage" class="text-slate-300 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
+            Inicializando proceso...
+          </span>
+          <span id="statusTimer" class="text-slate-500">0.0s</span>
+        </div>
+        <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+          <div id="progressBar" class="bg-gradient-to-r from-sky-400 to-emerald-400 h-full w-0 transition-all duration-300"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- PANEL DE RESULTADOS (COLUMNA DERECHA) -->
+    <section id="output-panel" class="w-full lg:w-1/2 flex flex-col h-full bg-slate-950">
+      
+      <!-- TOOLBAR DE SALIDA -->
+      <div class="p-4 border-b border-industrial-border bg-slate-900/80 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2">
+          <i data-lucide="file-text" class="w-4 h-4 text-industrial-accent"></i>
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-200">Dictamen Técnico Pericial</span>
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <button 
+            id="btnCopy" 
+            onclick="copyReportToClipboard()" 
+            class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5"
+            disabled
+          >
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar
+          </button>
+          
+          <button 
+            id="btnPrint" 
+            onclick="window.print()" 
+            class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5"
+            disabled
+          >
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i> Imprimir / PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- ÁREA DE CONTENIDO / REPORTE -->
+      <div id="reportContainer" class="flex-1 p-6 overflow-y-auto">
+        <!-- Estado Vacío Inicial -->
+        <div id="emptyState" class="h-full flex flex-col items-center justify-center text-center text-slate-500 max-w-sm mx-auto space-y-3">
+          <div class="p-4 rounded-full bg-slate-900 border border-slate-800 text-slate-600">
+            <i data-lucide="shield-alert" class="w-10 h-10"></i>
+          </div>
+          <h3 class="text-sm font-semibold text-slate-400">Sin Auditoría en Curso</h3>
+          <p class="text-xs">
+            Cargue fotografías, video y notas de telemetría de cualquier máquina electromecánica y ejecute el análisis para recibir el desglose técnico estructurado.
+          </p>
+        </div>
+
+        <!-- Visor Markdown Renderizado -->
+        <div id="renderedReport" class="hidden prose-industrial text-slate-200 text-xs"></div>
+      </div>
+
+      <!-- FOOTER DEL REPORTE -->
+      <div class="px-6 py-2.5 bg-slate-900/60 border-t border-industrial-border text-[11px] text-slate-500 flex justify-between items-center font-mono shrink-0">
+        <span>ISO 14224 / ISO 10816 / IEEE 43 COMPLIANT FORMAT</span>
+        <span id="reportTimestamp">--/--/--</span>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- LÓGICA DE CONTROL JAVASCRIPT -->
+  <script>
+    // Inicializar iconos de Lucide
+    lucide.createIcons();
+
+    // Variables de estado
+    let selectedImageBase64 = null;
+    let selectedImageMime = null;
+    let selectedVideoBase64 = null;
+    let selectedVideoMime = null;
+    let analysisTimer = null;
+    let secondsElapsed = 0;
+
+    // Carga de API Key almacenada
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedKey = localStorage.getItem('GEMINI_API_KEY');
+      if (savedKey) {
+        document.getElementById('apiKeyInput').value = savedKey;
+      }
+    });
+
+    function saveApiKey() {
+      const key = document.getElementById('apiKeyInput').value.trim();
+      if (!key) {
+        alert('Por favor ingrese una clave válida.');
+        return;
+      }
+      localStorage.setItem('GEMINI_API_KEY', key);
+      alert('API Key de Gemini configurada satisfactoriamente.');
+    }
+
+    // Manejo de Imágenes
+    function handleImageSelected(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        alert('El archivo seleccionado debe ser una imagen.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const fullBase64 = evt.target.result;
+        selectedImageBase64 = fullBase64.split(',')[1];
+        selectedImageMime = file.type;
+
+        document.getElementById('imagePreview').src = fullBase64;
+        document.getElementById('imagePreviewContainer').classList.remove('hidden');
+        lucide.createIcons();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearImage() {
+      selectedImageBase64 = null;
+      selectedImageMime = null;
+      document.getElementById('imageInput').value = '';
+      document.getElementById('cameraInput').value = '';
+      document.getElementById('imagePreviewContainer').classList.add('hidden');
+    }
+
+    // Manejo de Videos
+    function handleVideoSelected(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      // Validación de tamaño (Límite inline 20MB)
+      if (file.size > 20 * 1024 * 1024) {
+        alert('El archivo de video excede 20MB. Para análisis rápido vía payload multipart, corte el clip a menos de 20MB.');
+        e.target.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const fullBase64 = evt.target.result;
+        selectedVideoBase64 = fullBase64.split(',')[1];
+        selectedVideoMime = file.type;
+
+        const videoPreview = document.getElementById('videoPreview');
+        videoPreview.src = fullBase64;
+        document.getElementById('videoInfo').innerText = `${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`;
+        document.getElementById('videoPreviewContainer').classList.remove('hidden');
+        lucide.createIcons();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearVideo() {
+      selectedVideoBase64 = null;
+      selectedVideoMime = null;
+      document.getElementById('videoInput').value = '';
+      const videoPreview = document.getElementById('videoPreview');
+      videoPreview.src = '';
+      document.getElementById('videoPreviewContainer').classList.add('hidden');
+    }
+
+    // Actualizador de UI de progreso
+    function updateStatus(message, progressPercent) {
+      document.getElementById('statusMessage').innerHTML = `<span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span> ${message}`;
+      document.getElementById('progressBar').style.width = `${progressPercent}%`;
+    }
+
+    function startTimer() {
+      secondsElapsed = 0;
+      clearInterval(analysisTimer);
+      analysisTimer = setInterval(() => {
+        secondsElapsed += 0.1;
+        document.getElementById('statusTimer').innerText = `${secondsElapsed.toFixed(1)}s`;
+      }, 100);
+    }
+
+    function stopTimer() {
+      clearInterval(analysisTimer);
+    }
+
+    // EJECUCIÓN PRINCIPAL DEL DIAGNÓSTICO
+    async function executeForensicAnalysis() {
+      const apiKey = document.getElementById('apiKeyInput').value.trim();
+      if (!apiKey) {
+        alert('Se requiere ingresar la clave de API de Gemini.');
+        document.getElementById('apiKeyInput').focus();
+        return;
+      }
+
+      const contextText = document.getElementById('contextInput').value.trim();
+
+      // Validar que exista al menos una fuente de entrada
+      if (!selectedImageBase64 && !selectedVideoBase64 && !contextText) {
+        alert('Debe suministrar al menos un elemento de entrada (Fotografía, Video o Síntomas/Contexto operativo).');
+        return;
+      }
+
+      // Preparación de UI
+      const btnAnalyze = document.getElementById('btnAnalyze');
+      const statusContainer = document.getElementById('statusContainer');
+      btnAnalyze.disabled = true;
+      statusContainer.classList.remove('hidden');
+      startTimer();
+
+      try {
+        updateStatus("Codificando telemetría y evidencias multimedia...", 25);
+
+        // Estructuración del Prompt y Reglas Mandatorias
+        const forensicPrompt = `
+Efectúa una evaluación forense y de confiabilidad operacional técnica completa para el equipo electromecánico analizado.
+
+La respuesta DEBE estructurarse ESTRICTAMENTE en las siguientes 4 secciones con formato Markdown estandarizado:
+
+## 1. Descripción Real de lo Observado
+- Desglose objetivo, milimétrico y detallado de cada componente visible o inferido (estator, rotor, sellos, acople, rodamientos, devanados, carcasa, bornes, lubricante, etc.).
+- Identificación de patrones de deterioro, decoloración térmica, fractografía visible, contaminación, desgaste erosivo/adhesivo, vibración o desalineación visual.
+
+## 2. Planteamiento del Problema
+- Causa raíz técnica más probable.
+- Componente(s) específico(s) comprometido(s) y subsistema (Mecánico, Eléctrico, Hidráulico, Neumático o Control).
+- Grado de criticidad operacional (Bajo, Medio, Alto, Inmediato/Catastrófico) según riesgo de parada o daño secundario.
+
+## 3. Análisis Real
+- Deducción basada en primeros principios de ingeniería: correlación termodinámica, esfuerzos mecánicos (tensión, cizalladura, fatiga cíclica), fenómenos electromagnéticos (descargas parciales, armónicos, desbalance de fase) o tribología (falla por lubricación, película hidrodinámica rota, cavitación).
+- Justificación técnica de la progresión del fallo.
+
+## 4. Soluciones Detalladas
+- **Contención Inmediata:** Medidas de seguridad y detención de daños colaterales.
+- **Procedimiento de Reparación Definitivo:** Guía técnica paso a paso para la restauración del equipo.
+- **Herramientas, Insumos y Repuestos:** Lista concreta (ej. extractores, micrómetros, torquímetros, megóhmetro, tipos de grasa/aceite ISO VG, rodamientos con holgura C3, etc.).
+- **Plan Preventivo y Confiabilidad:** Medidas para evitar recurrencia (rutas de vibración, termografía, análisis de aceite, calibración o modificaciones de operación).
+
+DATOS Y TELEMETRÍA DEL OPERADOR:
+${contextText ? contextText : "Sin descripción textual provista. Basa el análisis rigurosamente en las evidencias multimedia adjuntas."}
+`;
+
+        // Construcción de los 'parts' para Gemini
+        const parts = [{ text: forensicPrompt }];
+
+        if (selectedImageBase64) {
+          parts.push({
+            inlineData: {
+              mimeType: selectedImageMime,
+              data: selectedImageBase64
+            }
+          });
+        }
+
+        if (selectedVideoBase64) {
+          parts.push({
+            inlineData: {
+              mimeType: selectedVideoMime,
+              data: selectedVideoBase64
+            }
+          });
+        }
+
+        updateStatus("Transmitiendo al motor Gemini 1.5 Pro (Temp: 0.2)...", 60);
+
+        // Llamada a la API de Gemini (gemini-1.5-pro)
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
+
+        const payload = {
+          systemInstruction: {
+            parts: [{
+              text: "Eres un consultor experto en ingeniería de mantenimiento industrial, análisis de fallas forenses y confiabilidad operacional. Tus diagnósticos siguen estrictos estándares técnicos, físicos y normativos."
+            }]
+          },
+          contents: [{
+            role: "user",
+            parts: parts
+          }],
+          generationConfig: {
+            temperature: 0.2,
+            topP: 0.8,
+            maxOutputTokens: 4096
+          }
+        };
+
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error?.message || `Error HTTP: ${response.status}`);
+        }
+
+        updateStatus("Compilando informe y correlacionando normativas...", 90);
+
+        const data = await response.json();
+        const candidate = data.candidates?.[0];
+        const generatedText = candidate?.content?.parts?.[0]?.text;
+
+        if (!generatedText) {
+          throw new Error("El modelo no devolvió contenido válido o fue bloqueado por directivas de seguridad.");
+        }
+
+        // Renderizado del resultado
+        renderDiagnosisReport(generatedText);
+        updateStatus("Análisis completado.", 100);
+
+      } catch (err) {
+        console.error("Fallo durante el análisis:", err);
+        alert(`Fallo en el diagnóstico: ${err.message}`);
+        updateStatus("Proceso interrumpido con errores.", 0);
+      } finally {
+        stopTimer();
+        btnAnalyze.disabled = false;
+        setTimeout(() => {
+          statusContainer.classList.add('hidden');
+        }, 2000);
+      }
+    }
+
+    // Renderizar Markdown y actualizar interfaz
+    function renderDiagnosisReport(markdownText) {
+      document.getElementById('emptyState').classList.add('hidden');
+      const reportDiv = document.getElementById('renderedReport');
+      reportDiv.innerHTML = marked.parse(markdownText);
+      reportDiv.classList.remove('hidden');
+
+      // Habilitar botones de acción
+      document.getElementById('btnCopy').disabled = false;
+      document.getElementById('btnPrint').disabled = false;
+
+      // Actualizar timestamp
+      const now = new Date();
+      document.getElementById('reportTimestamp').innerText = `GENERADO: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+      
+      // Auto-scroll al reporte
+      reportDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Copiar informe íntegro al portapapeles
+    function copyReportToClipboard() {
+      const text = document.getElementById('renderedReport').innerText;
+      if (!text) return;
+
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btnCopy');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> ¡Copiado!`;
+        lucide.createIcons();
+        setTimeout(() => {
+          btn.innerHTML = originalHtml;
+          lucide.createIcons();
+        }, 2000);
+      }).catch(err => {
+        alert('No se pudo copiar al portapapeles: ' + err);
+      });
+    }
+  </script>
+</body>
+</html>

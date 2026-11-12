@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #020617;
+    color: #f8fafc;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Estilos para el reporte Markdown generado */
+.prose-industrial h1 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #38bdf8;
+  border-bottom: 2px solid #0284c7;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.prose-industrial h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #38bdf8;
+  border-bottom: 1px solid #334155;
+  padding-bottom: 0.5rem;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.prose-industrial h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #f8fafc;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose-industrial p {
+  color: #cbd5e1;
+  margin-bottom: 0.75rem;
+  line-height: 1.65;
+  font-size: 0.8125rem;
+}
+
+.prose-industrial ul, 
+.prose-industrial ol {
+  margin-left: 1.5rem;
+  margin-bottom: 0.85rem;
+  color: #cbd5e1;
+  font-size: 0.8125rem;
+}
+
+.prose-industrial li {
+  margin-bottom: 0.4rem;
+  list-style-type: square;
+  line-height: 1.55;
+}
+
+.prose-industrial strong {
+  color: #f1f5f9;
+  font-weight: 600;
+}
+
+.prose-industrial hr {
+  border-color: #1e293b;
+  margin: 1.5rem 0;
+}
+
+.prose-industrial blockquote {
+  border-left: 3px solid #38bdf8;
+  padding-left: 1rem;
+  color: #94a3b8;
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+/* Estilos de Impresión */
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+  #input-panel, 
+  #header-controls, 
+  .no-print {
+    display: none !important;
+  }
+  #output-panel {
+    width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    background-color: white !important;
+  }
+  .prose-industrial h1 {
+    color: #0369a1 !important;
+    border-color: #0284c7 !important;
+  }
+  .prose-industrial h2 {
+    color: #0284c7 !important;
+    border-color: #cbd5e1 !important;
+  }
+  .prose-industrial h3 {
+    color: #0f172a !important;
+  }
+  .prose-industrial p, 
+  .prose-industrial li {
+    color: #334155 !important;
+  }
+  .prose-industrial strong {
+    color: #0f172a !important;
+  }
+}

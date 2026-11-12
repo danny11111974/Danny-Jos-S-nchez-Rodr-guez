@@ -1,0 +1,6 @@
+{
+  "name": "ELECTRO-DIAG Pro - Auditoría Forense Electromecánica",
+  "description": "Sistema de peritaje y confiabilidad operacional para diagnóstico forense multimodal de fallas en motores, bombas, reductores y trenes de potencia según ISO 10816, ISO 14224 e IEEE 43.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
